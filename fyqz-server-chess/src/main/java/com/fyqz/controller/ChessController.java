@@ -1,13 +1,13 @@
 package com.fyqz.controller;
 
 
-import com.fyqz.model.User;
+import com.fyqz.dto.UserDto;
+import com.fyqz.result.Result;
 import com.fyqz.rpc.UserServiceFeign;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -23,17 +23,19 @@ public class ChessController {
      * 向前端提供一个访问地址；通过userServiceFeign调用服务并返回结果
      * @return
      */
-    @RequestMapping(value = "/personChess",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
-    public String person(){
-        String result = userServiceFeign.getUser();
-        return result;
+
+    @ApiOperation(value = "棋子管理根据ID获取用户", notes = "棋子管理根据ID获取用户")
+    @ApiImplicitParam(name = "userId", value = "用户ID", required = true, dataType = "String")
+    @RequestMapping(value = "/queryChessUser/{userId}", method = RequestMethod.GET)
+    public Result queryUser(@PathVariable("userId") String userId) {
+        return userServiceFeign.queryUser(userId);
     }
 
-    @RequestMapping(value = "/userChess",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
-    public String user(){
-        User user = new User();
-        user.setName("I am  From userChess");
-        String result = userServiceFeign.hello(user);
-        return result;
+
+    @ApiOperation("棋子管理添加用户")
+    @ApiImplicitParam(name = "user", value = "用户信息", required = true, dataType = "UserDto")
+    @PostMapping("/addChessUser")
+    public Result addUser(@RequestBody UserDto user) {
+        return  userServiceFeign.addUser(user);
     }
 }
